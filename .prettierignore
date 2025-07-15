@@ -1,0 +1,5 @@
+echo "dist/
+build/
+node_modules/
+*.min.js
+*.bundle.js" > .prettierignore

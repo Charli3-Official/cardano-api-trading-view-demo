@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  tradingview-demo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tradingview-demo
+    ports:
+      - '8080:80'
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    networks:
+      - tradingview-network
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  tradingview-network:
+    driver: bridge

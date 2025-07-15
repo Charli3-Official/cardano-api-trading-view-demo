@@ -1,0 +1,204 @@
+/* Auto-sync control container */
+.auto-sync-control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Hide the checkbox */
+.auto-sync-checkbox {
+  display: none;
+}
+
+/* Auto-sync button - DEFAULT STATE (OFF) */
+.auto-sync-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--bg-tertiary);
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  user-select: none;
+}
+
+/* Hover state - ONLY when NOT active (OFF state) */
+.auto-sync-button:hover:not(.active) {
+  background: var(--bg-secondary);
+  border-color: var(--accent-blue);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ACTIVE state - when auto-sync is ON */
+.auto-sync-button.active {
+  background: var(--accent-blue) !important;
+  color: white !important;
+  border-color: var(--accent-blue) !important;
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3);
+}
+
+/* Active hover state - when ON and hovering */
+.auto-sync-button.active:hover {
+  background: #4a90e2 !important;
+  transform: translateY(-1px);
+}
+
+/* Syncing animation - when actively syncing */
+.auto-sync-button.syncing .sync-icon {
+  animation: spin 1s linear infinite;
+}
+
+/* Icon styles */
+.sync-icon {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s;
+}
+
+/* Enhanced search results */
+.search-no-results {
+  padding: 24px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.no-results-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+  opacity: 0.6;
+}
+
+.no-results-text {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.no-results-suggestion {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.search-error {
+  padding: 16px;
+  background: rgba(248, 81, 73, 0.1);
+  border: 1px solid #f85149;
+  border-radius: 4px;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.search-error button {
+  margin-left: 8px;
+  padding: 4px 8px;
+  background: #f85149;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.search-error button:hover {
+  background: #d73027;
+}
+/* Compact date inputs */
+.time-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px; /* Reduce gap */
+}
+
+.time-control-group {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* Smaller gap */
+}
+
+#from-date,
+#to-date {
+  width: 160px; /* Smaller width */
+  padding: 4px 8px; /* Less padding */
+  font-size: 12px; /* Smaller font */
+}
+
+#resolution-select {
+  width: 80px; /* Smaller resolution dropdown */
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+/* Make labels more compact */
+.time-control-group label {
+  font-size: 12px;
+  white-space: nowrap;
+  min-width: fit-content;
+}
+
+/* Responsive - stack vertically on small screens */
+@media (max-width: 768px) {
+  .time-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #from-date,
+  #to-date {
+    width: 100%;
+  }
+}
+
+.data-limit-notification {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background: var(--warning-bg, #fef3cd);
+  color: var(--warning-text, #664d03);
+  border: 1px solid var(--warning-border, #ffecb5);
+  border-radius: 6px;
+  padding: 12px 16px;
+  max-width: 350px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateX(100%);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.data-limit-notification.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.data-limit-notification .notification-icon {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.data-limit-notification .notification-tip {
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.bars-at-limit {
+  color: var(--warning-text, #f57c00) !important;
+  font-weight: 600;
+}
+
+/* Dark theme support */
+[data-theme='dark'] .data-limit-notification {
+  background: var(--warning-bg-dark, #2d2a1f);
+  color: var(--warning-text-dark, #ffd60a);
+  border-color: var(--warning-border-dark, #433d26);
+}

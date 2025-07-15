@@ -1,0 +1,1721 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="assets/charli3_black_icon.png"
+      sizes="32x32"
+    />
+    <title>Charli3 Cardano API – TradingView Demo</title>
+    <style>
+      :root[data-theme='light'] {
+        --bg-primary: #ffffff;
+        --bg-secondary: #fefefe;
+        --bg-tertiary: #f8f9fa;
+        --border-color: #e1e4e8;
+        --text-primary: #24292f;
+        --text-secondary: #57606a;
+        --accent-blue: #9369ff;
+        --accent-purple: #271868;
+        --accent-green: #1a7f37;
+        --accent-red: #f85149;
+        --shadow: 0 8px 24px rgba(147, 105, 255, 0.15);
+        --card-bg: #ffffff;
+        --accent-color: #9369ff;
+        --gradient-primary: linear-gradient(135deg, #271868, #9369ff);
+        --gradient-secondary: linear-gradient(135deg, #ed94ff, #f7e7ff);
+      }
+
+      :root[data-theme='dark'] {
+        --bg-primary: #0d1117;
+        --bg-secondary: #161b22;
+        --bg-tertiary: #21262d;
+        --border-color: #30363d;
+        --text-primary: #c9d1d9;
+        --text-secondary: #8b949e;
+        --accent-blue: #9369ff;
+        --accent-purple: #271868;
+        --accent-green: #3fb950;
+        --accent-red: #f85149;
+        --shadow: 0 8px 24px rgba(147, 105, 255, 0.2);
+        --card-bg: #161b22;
+        --accent-color: #9369ff;
+        --gradient-primary: linear-gradient(135deg, #271868, #9369ff);
+        --gradient-secondary: linear-gradient(135deg, #ed94ff, #f7e7ff);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial,
+          sans-serif;
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.5;
+        transition:
+          background-color 0.3s,
+          color 0.3s;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 12px 20px; /* Reduce top/bottom from 20px to 12px */
+      }
+      /* Header */
+      .header {
+        background-color: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-color);
+        padding: 6px 0;
+        margin-bottom: 8px;
+      }
+
+      /* Theme Toggle */
+      .theme-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .theme-toggle-label {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      .theme-switch {
+        position: relative;
+        width: 48px;
+        height: 24px;
+        background-color: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .theme-switch::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 18px;
+        height: 18px;
+        background-color: var(--text-primary);
+        border-radius: 50%;
+        transition: transform 0.3s;
+      }
+
+      .theme-switch.active {
+        background: var(--gradient-primary);
+      }
+
+      .theme-switch.active::after {
+        transform: translateX(24px);
+      }
+
+      /* Token Info Panel */
+      .token-info-panel {
+        background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .token-info-panel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--gradient-primary);
+      }
+
+      .token-info-grid {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .token-logos {
+        display: flex;
+        align-items: center;
+        gap: -10px;
+      }
+
+      .token-logo {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background-color: var(--bg-tertiary);
+        border: 2px solid var(--bg-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 16px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .token-logo img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .token-logo:nth-child(2) {
+        z-index: 0;
+      }
+
+      .token-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+      }
+
+      .detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .detail-label {
+        font-size: 12px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+      }
+
+      .detail-value {
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      .detail-value.monospace {
+        font-family: monospace;
+        font-size: 14px;
+      }
+
+      .price-change {
+        font-size: 14px;
+        margin-left: 8px;
+      }
+
+      .positive {
+        color: var(--accent-green);
+      }
+
+      .negative {
+        color: var(--accent-red);
+      }
+
+      /* ENHANCED STREAM WIDGET STYLES */
+      .stream-widget {
+        background: linear-gradient(135deg, var(--card-bg), var(--bg-tertiary));
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        margin: 20px 0;
+        padding: 20px;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        animation: slideDown 0.3s ease-out;
+        box-shadow: var(--shadow);
+        display: block;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stream-widget::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--gradient-primary);
+      }
+
+      .stream-widget.hidden {
+        display: none;
+      }
+
+      .stream-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .stream-header-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .stream-status-addon-error {
+        color: #ff9800 !important;
+        font-weight: 600;
+      }
+
+      .addon-message {
+        text-align: center;
+        padding: 24px;
+        background: rgba(255, 193, 7, 0.1);
+        border: 1px solid rgba(255, 193, 7, 0.3);
+        border-radius: 8px;
+        margin: 8px 0;
+      }
+
+      .addon-message-header {
+        font-size: 16px;
+        color: #ff9800;
+        margin-bottom: 16px;
+      }
+
+      .addon-message-content p {
+        color: var(--text-primary);
+        line-height: 1.5;
+        margin-bottom: 12px;
+      }
+
+      .addon-message-actions {
+        margin-top: 20px;
+      }
+
+      .addon-upgrade-link {
+        display: inline-block;
+        padding: 12px 24px;
+        background: var(--gradient-primary);
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: all 0.2s;
+        box-shadow: var(--shadow);
+      }
+
+      .addon-upgrade-link:hover {
+        background: var(--accent-color);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(147, 105, 255, 0.3);
+      }
+
+      .stream-dex {
+        color: var(--text-secondary);
+        font-size: 12px;
+      }
+
+      .stream-retry-btn {
+        background: var(--accent-color);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 4px 8px;
+        font-size: 11px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+
+      .stream-retry-btn:hover {
+        opacity: 0.8;
+      }
+
+      /* Enhanced stream content with detailed grid */
+      .stream-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .stream-metric {
+        background: var(--bg-tertiary);
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+      }
+
+      .stream-label {
+        font-size: 11px;
+        color: var(--text-secondary);
+        margin-bottom: 6px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .stream-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+        transition: all 0.3s ease;
+        word-break: break-all;
+      }
+
+      .stream-value.large {
+        font-size: 16px;
+      }
+
+      .stream-value.monospace {
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        line-height: 1.2;
+      }
+
+      .stream-secondary {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-top: 4px;
+      }
+
+      .stream-change {
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      /* Pool ID special styling */
+      .pool-id-section {
+        grid-column: 1 / -1;
+        background: var(--bg-secondary);
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 8px;
+      }
+
+      .pool-id-short {
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        color: var(--accent-color);
+        word-break: break-all;
+      }
+
+      .pool-id-full {
+        font-family: 'Courier New', monospace;
+        font-size: 10px;
+        color: var(--text-secondary);
+        word-break: break-all;
+        margin-top: 4px;
+        line-height: 1.3;
+      }
+
+      .stream-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        color: var(--text-secondary);
+        border-top: 1px solid var(--border-color);
+        padding-top: 12px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .block-info {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      /* Animations */
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes flash-green {
+        0%,
+        100% {
+          background-color: transparent;
+        }
+        50% {
+          background-color: rgba(63, 185, 80, 0.2);
+          border-radius: 4px;
+        }
+      }
+
+      @keyframes flash-red {
+        0%,
+        100% {
+          background-color: transparent;
+        }
+        50% {
+          background-color: rgba(248, 81, 73, 0.2);
+          border-radius: 4px;
+        }
+      }
+
+      /* DEX Selection */
+      .dex-selection {
+        margin-bottom: 16px;
+      }
+
+      .dex-list {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .dex-button {
+        padding: 8px 16px;
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 14px;
+      }
+
+      .dex-button:hover {
+        background-color: var(--bg-tertiary);
+        border-color: var(--accent-blue);
+      }
+
+      .dex-button.active {
+        background: var(--gradient-primary);
+        color: white;
+        border-color: var(--accent-color);
+      }
+
+      /* Search Section */
+      .search-section {
+        margin-bottom: 24px;
+      }
+
+      .search-container {
+        position: relative;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .search-input-wrapper {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .search-input {
+        flex: 1;
+        padding: 12px 16px;
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        color: var(--text-primary);
+        font-size: 16px;
+        transition: all 0.2s;
+      }
+
+      .search-button {
+        padding: 12px 20px;
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+        box-shadow: var(--shadow);
+      }
+
+      .search-button:hover {
+        background: var(--accent-color);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(147, 105, 255, 0.3);
+      }
+
+      .search-button:active {
+        transform: translateY(0);
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(147, 105, 255, 0.1);
+      }
+
+      .search-input::placeholder {
+        color: var(--text-secondary);
+      }
+
+      /* Search Results Dropdown */
+      .search-results {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        right: 0;
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        max-height: 300px;
+        overflow-y: auto;
+        display: none;
+        z-index: 1000;
+        box-shadow: var(--shadow);
+      }
+
+      .search-results.active {
+        display: block;
+      }
+
+      .search-result-item {
+        padding: 12px 16px;
+        cursor: pointer;
+        border-bottom: 1px solid var(--border-color);
+        transition: background-color 0.2s;
+        position: relative;
+      }
+
+      .search-result-item:last-child {
+        border-bottom: none;
+      }
+
+      .search-result-item:hover {
+        background-color: var(--bg-tertiary);
+      }
+
+      .search-result-item.loading {
+        opacity: 0.6;
+        pointer-events: none;
+      }
+
+      .search-result-item.loading.loading::after {
+        animation-name: none !important;
+        animation-duration: 0s !important;
+        animation-delay: 0s !important;
+        animation-iteration-count: 0 !important;
+        animation-fill-mode: none !important;
+        animation-play-state: paused !important;
+        animation-timing-function: initial !important;
+        content: none !important;
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        width: 0 !important;
+        height: 0 !important;
+      }
+
+      .search-result-item.error {
+        background-color: rgba(248, 81, 73, 0.1);
+        border-left: 3px solid var(--accent-red);
+      }
+
+      .dex-name {
+        color: var(--accent-color);
+        font-weight: 600;
+        margin-right: 8px;
+      }
+
+      .token-pair {
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 4px;
+      }
+
+      .token-details {
+        font-size: 14px;
+        color: var(--text-secondary);
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+
+      .token-detail {
+        display: flex;
+        gap: 4px;
+      }
+
+      .detail-label {
+        font-weight: 500;
+      }
+
+      .tvl-preview {
+        color: var(--accent-color);
+        font-weight: 500;
+        margin-left: auto;
+      }
+
+      /* Time Controls */
+      .time-controls {
+        background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .time-controls::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--gradient-primary);
+        opacity: 0.5;
+      }
+
+      .time-control-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .time-control-label {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      .time-select,
+      .date-input {
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        color: var(--text-primary);
+        font-size: 14px;
+      }
+
+      .time-select:focus,
+      .date-input:focus {
+        outline: none;
+        border-color: var(--accent-color);
+      }
+
+      /* Auto-sync styles */
+      .auto-sync-control {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .auto-sync-button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        background: var(--bg-tertiary);
+        border: 2px solid var(--border-color);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .auto-sync-button:hover:not(.active) {
+        background: var(--accent-color);
+        color: white;
+        border-color: var(--accent-color);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .auto-sync-button.active {
+        background: var(--gradient-primary);
+        color: white;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(147, 105, 255, 0.2);
+      }
+
+      .auto-sync-checkbox {
+        display: none;
+      }
+
+      .auto-sync-checkbox:checked + .auto-sync-button {
+        background: var(--gradient-primary);
+        color: white;
+        border-color: var(--accent-color);
+      }
+
+      .auto-sync-button.syncing .sync-icon {
+        animation: spin 1s linear infinite;
+      }
+
+      .sync-icon {
+        width: 16px;
+        height: 16px;
+        transition: transform 0.2s;
+      }
+
+      /* Resolution and bars styling */
+      .time-select option:disabled {
+        color: #999;
+        background-color: #f5f5f5;
+      }
+
+      .bars-info {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        position: relative;
+      }
+
+      .bars-warning {
+        color: var(--accent-red) !important;
+        font-weight: 600;
+      }
+
+      .bars-info::after {
+        content: 'ⓘ';
+        font-size: 12px;
+        opacity: 0.7;
+        cursor: help;
+        margin-left: 4px;
+      }
+
+      .bars-info.bars-warning::after {
+        content: '⚠️';
+      }
+
+      /* Tooltip for help icon */
+      .bars-info::before {
+        content: 'Charts are limited to 240 bars. Lock resolutions exceed this limit for the selected timeframe.';
+        position: absolute;
+        bottom: 100%;
+        right: 0;
+        margin-bottom: 8px;
+        padding: 8px 12px;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.2s ease;
+        z-index: 1000;
+        box-shadow: var(--shadow);
+        max-width: 300px;
+        white-space: normal;
+        width: 280px;
+      }
+
+      .bars-info:hover::before {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .bars-info.bars-warning::before {
+        content: '⚠️ Approaching 240 bar limit! Some resolutions may be locked. Reduce your timeframe to unlock more resolution options.';
+        background: rgba(248, 81, 73, 0.1);
+        border-color: var(--accent-red);
+        color: var(--accent-red);
+      }
+
+      /* Timezone styles */
+      .timezone-control #timezone-select {
+        min-width: 140px;
+      }
+
+      .bars-info {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-left: auto;
+      }
+
+      /* Chart Container */
+      .chart-container {
+        background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 28px;
+        position: relative;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .chart-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--gradient-primary);
+      }
+
+      #chart {
+        width: 100%;
+        height: 500px;
+      }
+
+      /* Loading State */
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid var(--border-color);
+        border-radius: 50%;
+        border-top-color: var(--accent-color);
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .stream-content {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .stream-metric {
+          padding: 10px;
+        }
+
+        .stream-value {
+          font-size: 13px;
+        }
+
+        .stream-value.large {
+          font-size: 14px;
+        }
+
+        .block-info {
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .time-controls {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 8px;
+        }
+
+        .time-control-group {
+          justify-content: space-between;
+        }
+
+        .bars-info {
+          margin-left: 0;
+          text-align: center;
+        }
+      }
+
+      /* Utility Classes */
+      .hidden {
+        display: none;
+      }
+
+      /* Scrollbar Styling */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: var(--bg-tertiary);
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--text-secondary);
+      }
+
+      .header-content {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+      }
+
+      .header-logo-section {
+        grid-column: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        justify-self: start;
+      }
+
+      .theme-toggle {
+        grid-column: 3; /* Right column */
+        justify-self: end;
+      }
+
+      .header-logo {
+        width: 72px !important;
+        height: 72px !important;
+        object-fit: contain;
+        flex-shrink: 0;
+      }
+
+      .header-text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .header-title {
+        font-size: 28px !important;
+        font-weight: 600 !important;
+        color: var(--text-primary) !important;
+        margin: 0 !important;
+        line-height: 1.1 !important;
+      }
+
+      .header-subtitle {
+        font-size: 20px !important;
+        color: var(--text-secondary) !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+        opacity: 0.8 !important;
+      }
+
+      .theme-toggle {
+        z-index: 1;
+      }
+
+      /* API Configuration Styles */
+      .api-config-panel {
+        background: var(--gradient-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+
+      .api-config-header {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        color: white;
+        font-weight: 600;
+      }
+
+      .api-config-header:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .api-config-content {
+        background: var(--bg-secondary);
+        padding: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .api-config-content.collapsed {
+        display: none;
+      }
+
+      .config-form {
+        display: grid;
+        gap: 12px;
+      }
+
+      .config-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .config-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .config-input {
+        padding: 10px 12px;
+        background-color: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        color: var(--text-primary);
+        font-size: 14px;
+        font-family: monospace;
+        transition: all 0.2s;
+      }
+
+      .config-input:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(147, 105, 255, 0.1);
+      }
+
+      .config-help {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-top: 4px;
+        line-height: 1.4;
+      }
+
+      .config-help a {
+        color: var(--accent-color);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .config-help a:hover {
+        text-decoration: underline;
+      }
+
+      .config-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 12px;
+      }
+
+      .config-button {
+        padding: 10px 20px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .config-button.primary {
+        background: var(--gradient-primary);
+        color: white;
+        border-color: var(--accent-color);
+      }
+
+      .config-button.primary:hover {
+        background: var(--accent-color);
+        opacity: 0.9;
+      }
+
+      .config-button.secondary {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+      }
+
+      .config-button.secondary:hover {
+        background: var(--bg-secondary);
+      }
+
+      .config-status {
+        padding: 12px 16px;
+        border-radius: 6px;
+        font-size: 14px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .config-status.success {
+        background: rgba(63, 185, 80, 0.1);
+        color: var(--accent-green);
+        border: 1px solid rgba(63, 185, 80, 0.3);
+      }
+
+      .config-status.error {
+        background: rgba(248, 81, 73, 0.1);
+        color: var(--accent-red);
+        border: 1px solid rgba(248, 81, 73, 0.3);
+      }
+
+      .config-status.warning {
+        background: rgba(255, 193, 7, 0.1);
+        color: #ff9800;
+        border: 1px solid rgba(255, 193, 7, 0.3);
+      }
+
+      .config-chevron {
+        transition: transform 0.2s;
+      }
+
+      .config-chevron.expanded {
+        transform: rotate(180deg);
+      }
+
+      .stream-chevron {
+        transition: transform 0.2s;
+        font-size: 12px;
+        color: var(--text-secondary);
+      }
+
+      .stream-chevron.expanded {
+        transform: rotate(180deg);
+      }
+
+      .stream-content-wrapper {
+        transition: all 0.3s ease;
+        overflow: hidden;
+      }
+
+      .stream-content-wrapper.collapsed {
+        max-height: 0;
+        padding: 0;
+        margin: 0;
+        opacity: 0;
+      }
+
+      .addon-warning {
+        background: rgba(255, 193, 7, 0.1);
+        border: 1px solid rgba(255, 193, 7, 0.3);
+        border-radius: 6px;
+        padding: 12px 16px;
+        margin-top: 16px;
+        color: #ff9800;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+
+      .addon-warning a {
+        color: #ff9800;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .addon-warning a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="container">
+        <div class="header-content">
+          <div class="header-logo-section">
+            <img
+              src="./assets/charli3_black_icon.png"
+              alt="Charli3"
+              class="header-logo"
+            />
+            <div class="header-text">
+              <h1 class="header-title">Charli3</h1>
+              <p class="header-subtitle">Cardano API</p>
+            </div>
+          </div>
+          <div class="header-middle">
+            <h2 class="main-title">TradingView Demo</h2>
+          </div>
+          <div class="theme-toggle">
+            <span class="theme-toggle-label">Dark</span>
+            <div id="theme-switch" class="theme-switch"></div>
+            <span class="theme-toggle-label">Light</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- API Configuration Panel -->
+      <div id="api-config-panel" class="api-config-panel">
+        <div class="api-config-header" onclick="toggleApiConfig()">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span id="api-config-header-text">API Configuration Required</span>
+          </div>
+          <div class="config-chevron" id="config-chevron">▼</div>
+        </div>
+        <div class="api-config-content" id="api-config-content">
+          <div id="config-status" class="config-status" style="display: none;"></div>
+          
+          <form class="config-form" onsubmit="saveApiConfig(event)">
+            <div class="config-field">
+              <label class="config-label" for="api-base-url">
+                Base URL
+              </label>
+              <input
+                type="url"
+                id="api-base-url"
+                class="config-input"
+                placeholder="https://api.charli3.io"
+                required
+              />
+            </div>
+
+            <div class="config-field">
+              <label class="config-label" for="api-bearer-token">
+                Bearer Token
+              </label>
+              <input
+                type="password"
+                id="api-bearer-token"
+                class="config-input"
+                placeholder="Enter your Charli3 API key"
+                required
+              />
+              <div class="config-help">
+                Get your API key at 
+                <a href="https://charli3.io/api" target="_blank" rel="noopener noreferrer">
+                  charli3.io/api
+                </a>
+              </div>
+            </div>
+
+            <div class="config-buttons">
+              <button type="button" class="config-button secondary" onclick="clearApiConfig()">
+                Clear
+              </button>
+              <button type="submit" class="config-button primary">
+                Save Configuration
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- DEX Selection -->
+      <div class="dex-selection">
+        <div id="dex-list" class="dex-list">
+          <!-- DEX buttons will be dynamically added here -->
+        </div>
+      </div>
+
+      <!-- Search Section -->
+      <div class="search-section">
+        <div class="search-container">
+          <div class="search-input-wrapper">
+            <input
+              type="text"
+              id="search-input"
+              class="search-input"
+              placeholder="Search by token, e.g., ADA.C3 (press Enter or click search)"
+              autocomplete="off"
+            />
+            <button id="search-button" class="search-button" type="button">
+              🔍 Search
+            </button>
+          </div>
+          <div id="search-results" class="search-results"></div>
+        </div>
+      </div>
+
+      <!-- Token Info Panel (Combined) -->
+      <div id="token-info-panel" class="token-info-panel hidden">
+        <div class="token-info-grid">
+          <div class="token-logos">
+            <div class="token-logo">
+              <img id="base-token-logo" src="" alt="" style="display: none" />
+              <span id="base-token-symbol">-</span>
+            </div>
+            <div class="token-logo">
+              <img id="quote-token-logo" src="" alt="" style="display: none" />
+              <span id="quote-token-symbol">-</span>
+            </div>
+          </div>
+          <div class="token-details">
+            <div class="detail-item">
+              <span class="detail-label">Token Pair</span>
+              <span id="token-pair" class="detail-value">--</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Price</span>
+              <div class="detail-value">
+                <span id="current-price">--</span>
+                <span id="price-change" class="price-change">--</span>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">TVL</span>
+              <div class="detail-value">
+                <span id="current-tvl">--</span>
+                <span id="tvl-change" class="price-change">--</span>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">24h Volume</span>
+              <span id="daily-volume" class="detail-value">--</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Policy ID</span>
+              <span id="policy-id" class="detail-value monospace">--</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Token Name</span>
+              <span id="token-name" class="detail-value">--</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENHANCED STREAM WIDGET WITH ALL DATA -->
+      <div id="stream-widget" class="stream-widget hidden">
+        <div class="stream-header" onclick="toggleStreamWidget()" style="cursor: pointer;">
+          <div class="stream-header-left">
+            <span id="stream-status">🟡 CONNECTING...</span>
+            <span class="stream-dex">[Aggregate]</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button
+              id="stream-retry"
+              class="stream-retry-btn"
+              style="display: none"
+              onclick="event.stopPropagation();"
+            >
+              Retry
+            </button>
+            <div class="stream-chevron" id="stream-chevron">▼</div>
+          </div>
+        </div>
+
+        <!-- Stream Content (collapsible) -->
+        <div class="stream-content-wrapper" id="stream-content-wrapper">
+          <!-- Pool ID Section -->
+          <div class="pool-id-section">
+            <div class="stream-label">Pool ID</div>
+            <div id="stream-pool-id-short" class="pool-id-short">--</div>
+            <div id="stream-pool-id-full" class="pool-id-full">--</div>
+          </div>
+
+          <!-- Main Data Grid -->
+          <div class="stream-content">
+          <!-- Current Price -->
+          <div class="stream-metric">
+            <div class="stream-label">Current Price</div>
+            <div id="stream-current-price" class="stream-value large">--</div>
+            <div id="stream-price-change" class="stream-change price-change">
+              --
+            </div>
+          </div>
+
+          <!-- Previous Price -->
+          <div class="stream-metric">
+            <div class="stream-label">Previous Price</div>
+            <div id="stream-previous-price" class="stream-value">--</div>
+          </div>
+
+          <!-- Current TVL -->
+          <div class="stream-metric">
+            <div class="stream-label">Current TVL</div>
+            <div id="stream-current-tvl" class="stream-value large">--</div>
+            <div id="stream-tvl-change" class="stream-change price-change">
+              --
+            </div>
+          </div>
+
+          <!-- Previous TVL -->
+          <div class="stream-metric">
+            <div class="stream-label">Previous TVL</div>
+            <div id="stream-previous-tvl" class="stream-value">--</div>
+          </div>
+
+          <!-- Volume -->
+          <div class="stream-metric">
+            <div class="stream-label">Volume</div>
+            <div id="stream-volume" class="stream-value large">--</div>
+            <div class="stream-secondary">Current Period</div>
+          </div>
+
+          <!-- Block Time -->
+          <div class="stream-metric">
+            <div class="stream-label">Block Time</div>
+            <div id="stream-block-time" class="stream-value">--</div>
+            <div id="stream-block-time-raw" class="stream-secondary">--</div>
+          </div>
+        </div>
+
+          <!-- Footer with additional info -->
+          <div class="stream-footer">
+            <div class="block-info">
+              <span id="stream-timestamp">Waiting for data...</span>
+              <span id="stream-data-type">--</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Time Controls -->
+      <div class="time-controls">
+        <div class="time-control-group">
+          <span class="time-control-label">Resolution:</span>
+          <select id="resolution-select" class="time-select">
+            <option value="1min">1 min</option>
+            <option value="5min">5 min</option>
+            <option value="15min">15 min</option>
+            <option value="60min">1 hour</option>
+            <option value="1d" selected>1 day</option>
+          </select>
+        </div>
+
+        <div class="time-control-group auto-sync-control">
+          <input
+            type="checkbox"
+            id="auto-sync-checkbox"
+            class="auto-sync-checkbox"
+          />
+          <label
+            for="auto-sync-checkbox"
+            id="auto-sync-button"
+            class="auto-sync-button"
+            title="Auto sync to latest data"
+          >
+            <svg
+              class="sync-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+              <path d="M21 3v5h-5" />
+              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+              <path d="M3 21v-5h5" />
+            </svg>
+            Auto-sync
+          </label>
+        </div>
+
+        <div class="time-control-group">
+          <span class="time-control-label">Dates:</span>
+          <input type="datetime-local" id="from-date" class="date-input" />
+        </div>
+
+        <div class="time-control-group">
+          <span class="time-control-label">To:</span>
+          <input type="datetime-local" id="to-date" class="date-input" />
+        </div>
+
+        <div class="time-control-group timezone-control">
+          <span class="time-control-label">Timezone:</span>
+          <select id="timezone-select" class="time-select">
+            <!-- Options populated by JavaScript -->
+          </select>
+        </div>
+
+        <div class="bars-info">
+          <span id="bars-count">0</span> bars (max 240)
+        </div>
+      </div>
+
+      <!-- Chart Container -->
+      <div class="chart-container">
+        <div id="chart"></div>
+      </div>
+    </div>
+
+    <script>
+      // API Configuration Management
+      function toggleApiConfig() {
+        const content = document.getElementById('api-config-content');
+        const chevron = document.getElementById('config-chevron');
+        
+        if (content.classList.contains('collapsed')) {
+          content.classList.remove('collapsed');
+          chevron.classList.add('expanded');
+        } else {
+          content.classList.add('collapsed');
+          chevron.classList.remove('expanded');
+        }
+      }
+
+      function saveApiConfig(event) {
+        event.preventDefault();
+        
+        let baseUrl = document.getElementById('api-base-url').value.trim();
+        const bearerToken = document.getElementById('api-bearer-token').value.trim();
+        
+        if (!baseUrl || !bearerToken) {
+          showConfigStatus('Please fill in all fields', 'error');
+          return;
+        }
+        
+        // Format the URL - remove /api/v1/ path if user included it
+        baseUrl = formatApiUrl(baseUrl);
+        
+        // Save to localStorage
+        localStorage.setItem('charli3_api_base_url', baseUrl);
+        localStorage.setItem('charli3_api_bearer_token', bearerToken);
+        
+        // Update header text
+        updateApiConfigHeaderText(true);
+        
+        showConfigStatus('✅ Configuration saved successfully!', 'success');
+        
+        // Reset the cache and addon error state
+        if (window.TradingViewDemo && window.TradingViewDemo.resetApiConfig) {
+          window.TradingViewDemo.resetApiConfig();
+        }
+        
+        // Collapse the config panel after a delay but keep it visible
+        setTimeout(() => {
+          const content = document.getElementById('api-config-content');
+          const chevron = document.getElementById('config-chevron');
+          if (content && chevron) {
+            content.classList.add('collapsed');
+            chevron.classList.remove('expanded');
+          }
+          // Reload the page to use the new configuration
+          window.location.reload();
+        }, 1500);
+      }
+
+      function formatApiUrl(url) {
+        // Remove trailing slash
+        url = url.replace(/\/$/, '');
+        
+        // Remove /api/v1 or /api/v1/ if present (case insensitive)
+        url = url.replace(/\/api\/v1\/?$/i, '');
+        
+        // Ensure it starts with https:// if no protocol specified
+        if (!url.match(/^https?:\/\//)) {
+          url = 'https://' + url;
+        }
+        
+        return url;
+      }
+
+      function updateApiConfigHeaderText(isConfigured) {
+        const headerText = document.getElementById('api-config-header-text');
+        if (headerText) {
+          headerText.textContent = isConfigured ? 'API Configuration Set' : 'API Configuration Required';
+        }
+      }
+
+      function clearApiConfig() {
+        localStorage.removeItem('charli3_api_base_url');
+        localStorage.removeItem('charli3_api_bearer_token');
+        
+        document.getElementById('api-base-url').value = '';
+        document.getElementById('api-bearer-token').value = '';
+        
+        // Update header text to show configuration is required
+        updateApiConfigHeaderText(false);
+        
+        showConfigStatus('Configuration cleared', 'warning');
+      }
+
+      function showConfigStatus(message, type) {
+        const status = document.getElementById('config-status');
+        status.textContent = message;
+        status.className = `config-status ${type}`;
+        status.style.display = 'block';
+        
+        // Auto-hide after 5 seconds unless it's an error
+        if (type !== 'error') {
+          setTimeout(() => {
+            status.style.display = 'none';
+          }, 5000);
+        }
+      }
+
+      // Check if API configuration is needed on page load
+      function checkApiConfig() {
+        const hasLocalUrl = localStorage.getItem('charli3_api_base_url');
+        const hasLocalToken = localStorage.getItem('charli3_api_bearer_token');
+        const isConfigured = hasLocalUrl && hasLocalToken;
+        
+        // Update header text based on configuration status
+        updateApiConfigHeaderText(isConfigured);
+        
+        // Always show the config panel so users can edit their configuration
+        document.getElementById('api-config-panel').style.display = 'block';
+        
+        // If no configuration exists, expand it by default
+        if (!isConfigured) {
+          const content = document.getElementById('api-config-content');
+          const chevron = document.getElementById('config-chevron');
+          if (content && chevron) {
+            content.classList.remove('collapsed');
+            chevron.classList.add('expanded');
+          }
+        } else {
+          // If configuration exists, collapse it by default but keep panel visible
+          const content = document.getElementById('api-config-content');
+          const chevron = document.getElementById('config-chevron');
+          if (content && chevron) {
+            content.classList.add('collapsed');
+            chevron.classList.remove('expanded');
+          }
+        }
+        
+        // Pre-fill with stored values if available
+        if (hasLocalUrl) {
+          document.getElementById('api-base-url').value = hasLocalUrl;
+        } else {
+          // Default to the expected API URL
+          document.getElementById('api-base-url').value = 'https://api.charli3.io';
+        }
+        if (hasLocalToken) {
+          document.getElementById('api-bearer-token').value = hasLocalToken;
+        }
+      }
+
+      // Show API config panel
+      function showApiConfig() {
+        const panel = document.getElementById('api-config-panel');
+        const content = document.getElementById('api-config-content');
+        const chevron = document.getElementById('config-chevron');
+        
+        panel.style.display = 'block';
+        content.classList.remove('collapsed');
+        chevron.classList.add('expanded');
+        
+        // Pre-fill with current values
+        const currentUrl = localStorage.getItem('charli3_api_base_url') || 'https://api.charli3.io';
+        const currentToken = localStorage.getItem('charli3_api_bearer_token') || '';
+        
+        document.getElementById('api-base-url').value = currentUrl;
+        document.getElementById('api-bearer-token').value = currentToken;
+      }
+
+      // Toggle stream widget content
+      function toggleStreamWidget() {
+        const content = document.getElementById('stream-content-wrapper');
+        const chevron = document.getElementById('stream-chevron');
+        
+        if (content && chevron) {
+          if (content.classList.contains('collapsed')) {
+            content.classList.remove('collapsed');
+            chevron.classList.add('expanded');
+          } else {
+            content.classList.add('collapsed');
+            chevron.classList.remove('expanded');
+          }
+        }
+      }
+
+      // Run check when DOM is loaded
+      document.addEventListener('DOMContentLoaded', checkApiConfig);
+    </script>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

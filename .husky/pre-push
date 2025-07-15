@@ -1,0 +1,5 @@
+# Final type check before push
+npm run type-check
+
+# Optional: Run build check
+npm run build
