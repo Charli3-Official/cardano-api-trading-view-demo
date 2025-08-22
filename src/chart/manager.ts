@@ -332,7 +332,7 @@ export class ChartManager {
       });
 
       // Debug logging for timezone issues
-      console.log('🕒 Hover timestamp:', {
+      debugLog('🕒 Hover timestamp:', {
         utcTimestamp: timestamp,
         timezone: this.selectedTimezone,
         formattedTime: dateStr,

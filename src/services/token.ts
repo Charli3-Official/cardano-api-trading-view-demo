@@ -15,19 +15,19 @@ export class TokenService {
 
   async getSymbols(group: string) {
     const cacheKey = `symbols_${group}`;
-    console.log(`🔍 TokenService.getSymbols called for group: ${group}`);
+    debugLog(`🔍 TokenService.getSymbols called for group: ${group}`);
     debugLog(`Fetching data for cache key: ${cacheKey}`);
 
     if (!(await this.cacheManager.isExpired('symbols', group))) {
       const cached = await this.cacheManager.get('symbols', group);
       if (cached) {
-        console.log(`✅ Using cached symbols for ${group} - NO API CALL`);
+        debugLog(`✅ Using cached symbols for ${group} - NO API CALL`);
         debugLog(`✅ Using cached symbols for ${group}`);
         return cached;
       }
     }
 
-    console.log(`🌐 Making fresh API call for symbols data for ${group}`);
+    debugLog(`🌐 Making fresh API call for symbols data for ${group}`);
     debugLog(`🌐 Fetching fresh symbols data for ${group}`);
     const symbolsData = await getSymbolInfo(group);
 
@@ -38,7 +38,7 @@ export class TokenService {
       CACHE_CONFIG.SYMBOLS_EXPIRY
     );
 
-    console.log(
+    debugLog(
       `💾 Cached symbols data for ${group} (${symbolsData?.symbol?.length || 0} symbols)`
     );
     return symbolsData;

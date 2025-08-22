@@ -1,3 +1,5 @@
+import { debugLog } from './debug';
+
 export class Formatters {
   static formatNumber(num: number): string {
     if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
@@ -24,7 +26,7 @@ export class Formatters {
   static getUserTimezone(): string {
     try {
       const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      console.log('🌍 Auto-detected timezone:', detectedTimezone);
+      debugLog('🌍 Auto-detected timezone:', detectedTimezone);
 
       // Common supported timezones (subset of what's in config.ts)
       const supportedTimezones = [
@@ -62,10 +64,7 @@ export class Formatters {
 
       // Check if detected timezone is in our supported list
       if (supportedTimezones.includes(detectedTimezone)) {
-        console.log(
-          '✅ Auto-detected timezone is supported:',
-          detectedTimezone
-        );
+        debugLog('✅ Auto-detected timezone is supported:', detectedTimezone);
         return detectedTimezone;
       } else {
         console.warn(
@@ -126,7 +125,7 @@ export class Formatters {
       const correctedUTC = localDate.getTime() + timezoneOffset;
       const utcTimestamp = Math.floor(correctedUTC / 1000);
 
-      console.log('📅 Date conversion:', {
+      debugLog('📅 Date conversion:', {
         input: dateInputValue,
         timezone: timezone,
         inputAsLocal: localDate.toLocaleString(),

@@ -92,7 +92,7 @@ export class TradingViewDemoApp {
 
       // Load symbols data for all groups
       for (const group of groups) {
-        console.log(`📡 Loading symbols for group: ${group}`);
+        debugLog(`📡 Loading symbols for group: ${group}`);
         const symbolsData = await this.tokenService.getSymbols(group);
         this.allSymbolsData.set(group, symbolsData);
         debugLog(

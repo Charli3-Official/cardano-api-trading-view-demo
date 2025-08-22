@@ -1,5 +1,6 @@
 import { APP_CONFIG } from '../config.js';
 import { ApiErrorHandler } from '../utils/error-handler.js';
+import { debugLog } from '../utils/debug.js';
 
 // API call counter for debugging
 let apiCallCounter = 0;
@@ -32,11 +33,11 @@ export async function fetchData(
     stack,
   });
 
-  console.log(`[API-${callId}] 🌐 API Call: ${url}`);
-  console.log(`[API-${callId}] 📊 Total API calls so far: ${apiCallCounter}`);
+  debugLog(`[API-${callId}] 🌐 API Call: ${url}`);
+  debugLog(`[API-${callId}] 📊 Total API calls so far: ${apiCallCounter}`);
 
   if (APP_CONFIG.DEBUG && stack) {
-    console.log(`[API-${callId}] 📍 Call stack:`, stack);
+    debugLog(`[API-${callId}] 📍 Call stack:`, stack);
   }
 
   // Check if API is configured
@@ -87,7 +88,7 @@ export async function fetchData(
       throw new Error('API returned non-JSON response');
     }
     const data = await response.json();
-    console.log(
+    debugLog(
       `[API-${callId}] ✅ Success: ${response.status} - ${Object.keys(data).length} keys in response`
     );
 
@@ -109,7 +110,7 @@ export async function fetchData(
       throw new Error('API returned non-image response');
     }
     const blob = await response.blob();
-    console.log(
+    debugLog(
       `[API-${callId}] ✅ Success: ${response.status} - Blob size: ${blob.size} bytes`
     );
     return blob;
