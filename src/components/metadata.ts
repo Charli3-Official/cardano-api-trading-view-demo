@@ -6,7 +6,11 @@ import adaLogoUrl from '../../assets/ada_logo.png';
 import type { TokenData } from '../types/index.js';
 
 export class MetadataComponent {
-  async update(tokenData: TokenData, currentTokenData?: any, historicalData?: any) {
+  async update(
+    tokenData: TokenData,
+    currentTokenData?: any,
+    historicalData?: any
+  ) {
     const panelEl = document.getElementById('token-info-panel')!;
     panelEl.classList.remove('hidden');
 
@@ -113,7 +117,11 @@ export class MetadataComponent {
     }
   }
 
-  private updateTokenInfo(tokenData: TokenData, currentTokenData?: any, historicalData?: any) {
+  private updateTokenInfo(
+    tokenData: TokenData,
+    currentTokenData?: any,
+    historicalData?: any
+  ) {
     document.getElementById('token-pair')!.textContent = tokenData.pair;
     document.getElementById('policy-id')!.textContent = tokenData.policy_id;
     document.getElementById('token-name')!.textContent =
@@ -158,12 +166,14 @@ export class MetadataComponent {
     if (historicalData && historicalData.c && historicalData.c.length > 0) {
       const latestHistoricalData = {
         price: historicalData.c[historicalData.c.length - 1],
-        tvl: historicalData.tvl && historicalData.tvl.length > 0 
-          ? historicalData.tvl[historicalData.tvl.length - 1] 
-          : null,
-        volume: historicalData.v && historicalData.v.length > 0 
-          ? historicalData.v[historicalData.v.length - 1] 
-          : null
+        tvl:
+          historicalData.tvl && historicalData.tvl.length > 0
+            ? historicalData.tvl[historicalData.tvl.length - 1]
+            : null,
+        volume:
+          historicalData.v && historicalData.v.length > 0
+            ? historicalData.v[historicalData.v.length - 1]
+            : null,
       };
 
       const historicalPriceEl = document.getElementById('historical-price')!;

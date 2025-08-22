@@ -122,7 +122,11 @@
 
       /* Token Info Panel */
       .token-info-panel {
-        background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+        background: linear-gradient(
+          135deg,
+          var(--bg-secondary),
+          var(--bg-tertiary)
+        );
         border: 1px solid var(--border-color);
         border-radius: 12px;
         padding: 24px;
@@ -215,24 +219,24 @@
       }
 
       .data-current {
-        color: #4CAF50;
+        color: #4caf50;
         font-weight: 600;
       }
 
       .data-historical {
-        color: #FF9800;
+        color: #ff9800;
         font-weight: 600;
       }
 
       .data-current:before {
-        content: "●";
-        color: #4CAF50;
+        content: '●';
+        color: #4caf50;
         margin-right: 4px;
       }
 
       .data-historical:before {
-        content: "●";
-        color: #FF9800;
+        content: '●';
+        color: #ff9800;
         margin-right: 4px;
       }
 
@@ -685,7 +689,11 @@
 
       /* Time Controls */
       .time-controls {
-        background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+        background: linear-gradient(
+          135deg,
+          var(--bg-secondary),
+          var(--bg-tertiary)
+        );
         border: 1px solid var(--border-color);
         border-radius: 12px;
         padding: 16px;
@@ -879,7 +887,11 @@
 
       /* Chart Container */
       .chart-container {
-        background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+        background: linear-gradient(
+          135deg,
+          var(--bg-secondary),
+          var(--bg-tertiary)
+        );
         border: 1px solid var(--border-color);
         border-radius: 12px;
         padding: 24px;
@@ -1271,19 +1283,21 @@
       <!-- API Configuration Panel -->
       <div id="api-config-panel" class="api-config-panel">
         <div class="api-config-header" onclick="toggleApiConfig()">
-          <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 12px">
             <span id="api-config-header-text">API Configuration Required</span>
           </div>
           <div class="config-chevron" id="config-chevron">▼</div>
         </div>
         <div class="api-config-content" id="api-config-content">
-          <div id="config-status" class="config-status" style="display: none;"></div>
-          
+          <div
+            id="config-status"
+            class="config-status"
+            style="display: none"
+          ></div>
+
           <form class="config-form" onsubmit="saveApiConfig(event)">
             <div class="config-field">
-              <label class="config-label" for="api-base-url">
-                Base URL
-              </label>
+              <label class="config-label" for="api-base-url"> Base URL </label>
               <input
                 type="url"
                 id="api-base-url"
@@ -1305,15 +1319,23 @@
                 required
               />
               <div class="config-help">
-                Get your API key at 
-                <a href="https://charli3.io/api" target="_blank" rel="noopener noreferrer">
+                Get your API key at
+                <a
+                  href="https://charli3.io/api"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   charli3.io/api
                 </a>
               </div>
             </div>
 
             <div class="config-buttons">
-              <button type="button" class="config-button secondary" onclick="clearApiConfig()">
+              <button
+                type="button"
+                class="config-button secondary"
+                onclick="clearApiConfig()"
+              >
                 Clear
               </button>
               <button type="submit" class="config-button primary">
@@ -1396,11 +1418,15 @@
             </div>
             <div class="detail-item">
               <span class="detail-label">24h Volume (Current)</span>
-              <span id="daily-volume" class="detail-value data-current">--</span>
+              <span id="daily-volume" class="detail-value data-current"
+                >--</span
+              >
             </div>
             <div class="detail-item">
               <span class="detail-label">24h Volume (Historical)</span>
-              <span id="historical-volume" class="detail-value data-historical">--</span>
+              <span id="historical-volume" class="detail-value data-historical"
+                >--</span
+              >
             </div>
             <div class="detail-item">
               <span class="detail-label">Policy ID</span>
@@ -1416,12 +1442,16 @@
 
       <!-- ENHANCED STREAM WIDGET WITH ALL DATA -->
       <div id="stream-widget" class="stream-widget hidden">
-        <div class="stream-header" onclick="toggleStreamWidget()" style="cursor: pointer;">
+        <div
+          class="stream-header"
+          onclick="toggleStreamWidget()"
+          style="cursor: pointer"
+        >
           <div class="stream-header-left">
             <span id="stream-status">🟡 CONNECTING...</span>
             <span class="stream-dex">[Aggregate]</span>
           </div>
-          <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px">
             <button
               id="stream-retry"
               class="stream-retry-btn"
@@ -1445,50 +1475,50 @@
 
           <!-- Main Data Grid -->
           <div class="stream-content">
-          <!-- Current Price -->
-          <div class="stream-metric">
-            <div class="stream-label">Current Price</div>
-            <div id="stream-current-price" class="stream-value large">--</div>
-            <div id="stream-price-change" class="stream-change price-change">
-              --
+            <!-- Current Price -->
+            <div class="stream-metric">
+              <div class="stream-label">Current Price</div>
+              <div id="stream-current-price" class="stream-value large">--</div>
+              <div id="stream-price-change" class="stream-change price-change">
+                --
+              </div>
+            </div>
+
+            <!-- Previous Price -->
+            <div class="stream-metric">
+              <div class="stream-label">Previous Price</div>
+              <div id="stream-previous-price" class="stream-value">--</div>
+            </div>
+
+            <!-- Current TVL -->
+            <div class="stream-metric">
+              <div class="stream-label">Current TVL</div>
+              <div id="stream-current-tvl" class="stream-value large">--</div>
+              <div id="stream-tvl-change" class="stream-change price-change">
+                --
+              </div>
+            </div>
+
+            <!-- Previous TVL -->
+            <div class="stream-metric">
+              <div class="stream-label">Previous TVL</div>
+              <div id="stream-previous-tvl" class="stream-value">--</div>
+            </div>
+
+            <!-- Volume -->
+            <div class="stream-metric">
+              <div class="stream-label">Volume</div>
+              <div id="stream-volume" class="stream-value large">--</div>
+              <div class="stream-secondary">Current Period</div>
+            </div>
+
+            <!-- Block Time -->
+            <div class="stream-metric">
+              <div class="stream-label">Block Time</div>
+              <div id="stream-block-time" class="stream-value">--</div>
+              <div id="stream-block-time-raw" class="stream-secondary">--</div>
             </div>
           </div>
-
-          <!-- Previous Price -->
-          <div class="stream-metric">
-            <div class="stream-label">Previous Price</div>
-            <div id="stream-previous-price" class="stream-value">--</div>
-          </div>
-
-          <!-- Current TVL -->
-          <div class="stream-metric">
-            <div class="stream-label">Current TVL</div>
-            <div id="stream-current-tvl" class="stream-value large">--</div>
-            <div id="stream-tvl-change" class="stream-change price-change">
-              --
-            </div>
-          </div>
-
-          <!-- Previous TVL -->
-          <div class="stream-metric">
-            <div class="stream-label">Previous TVL</div>
-            <div id="stream-previous-tvl" class="stream-value">--</div>
-          </div>
-
-          <!-- Volume -->
-          <div class="stream-metric">
-            <div class="stream-label">Volume</div>
-            <div id="stream-volume" class="stream-value large">--</div>
-            <div class="stream-secondary">Current Period</div>
-          </div>
-
-          <!-- Block Time -->
-          <div class="stream-metric">
-            <div class="stream-label">Block Time</div>
-            <div id="stream-block-time" class="stream-value">--</div>
-            <div id="stream-block-time-raw" class="stream-secondary">--</div>
-          </div>
-        </div>
 
           <!-- Footer with additional info -->
           <div class="stream-footer">
@@ -1574,7 +1604,7 @@
       function toggleApiConfig() {
         const content = document.getElementById('api-config-content');
         const chevron = document.getElementById('config-chevron');
-        
+
         if (content.classList.contains('collapsed')) {
           content.classList.remove('collapsed');
           chevron.classList.add('expanded');
@@ -1586,37 +1616,39 @@
 
       function saveApiConfig(event) {
         event.preventDefault();
-        
+
         let baseUrl = document.getElementById('api-base-url').value.trim();
-        let bearerToken = document.getElementById('api-bearer-token').value.trim();
-        
+        let bearerToken = document
+          .getElementById('api-bearer-token')
+          .value.trim();
+
         // If token contains the masked pattern (dots in middle), keep the existing token
         if (bearerToken.includes('••••••••••')) {
           bearerToken = localStorage.getItem('charli3_api_bearer_token') || '';
         }
-        
+
         if (!baseUrl || !bearerToken) {
           showConfigStatus('Please fill in all fields', 'error');
           return;
         }
-        
+
         // Format the URL - remove /api/v1/ path if user included it
         baseUrl = formatApiUrl(baseUrl);
-        
+
         // Save to localStorage
         localStorage.setItem('charli3_api_base_url', baseUrl);
         localStorage.setItem('charli3_api_bearer_token', bearerToken);
-        
+
         // Update header text
         updateApiConfigHeaderText(true);
-        
+
         showConfigStatus('✅ Configuration saved successfully!', 'success');
-        
+
         // Reset the cache and addon error state
         if (window.TradingViewDemo && window.TradingViewDemo.resetApiConfig) {
           window.TradingViewDemo.resetApiConfig();
         }
-        
+
         // Collapse the config panel after a delay but keep it visible
         setTimeout(() => {
           const content = document.getElementById('api-config-content');
@@ -1633,35 +1665,37 @@
       function formatApiUrl(url) {
         // Remove trailing slash
         url = url.replace(/\/$/, '');
-        
+
         // Remove /api/v1 or /api/v1/ if present (case insensitive)
         url = url.replace(/\/api\/v1\/?$/i, '');
-        
+
         // Ensure it starts with https:// if no protocol specified
         if (!url.match(/^https?:\/\//)) {
           url = 'https://' + url;
         }
-        
+
         return url;
       }
 
       function updateApiConfigHeaderText(isConfigured) {
         const headerText = document.getElementById('api-config-header-text');
         if (headerText) {
-          headerText.textContent = isConfigured ? 'API Configuration Set' : 'API Configuration Required';
+          headerText.textContent = isConfigured
+            ? 'API Configuration Set'
+            : 'API Configuration Required';
         }
       }
 
       function clearApiConfig() {
         localStorage.removeItem('charli3_api_base_url');
         localStorage.removeItem('charli3_api_bearer_token');
-        
+
         document.getElementById('api-base-url').value = '';
         document.getElementById('api-bearer-token').value = '';
-        
+
         // Update header text to show configuration is required
         updateApiConfigHeaderText(false);
-        
+
         showConfigStatus('Configuration cleared', 'warning');
       }
 
@@ -1670,7 +1704,7 @@
         status.textContent = message;
         status.className = `config-status ${type}`;
         status.style.display = 'block';
-        
+
         // Auto-hide after 5 seconds unless it's an error
         if (type !== 'error') {
           setTimeout(() => {
@@ -1684,13 +1718,13 @@
         const hasLocalUrl = localStorage.getItem('charli3_api_base_url');
         const hasLocalToken = localStorage.getItem('charli3_api_bearer_token');
         const isConfigured = hasLocalUrl && hasLocalToken;
-        
+
         // Update header text based on configuration status
         updateApiConfigHeaderText(isConfigured);
-        
+
         // Always show the config panel so users can edit their configuration
         document.getElementById('api-config-panel').style.display = 'block';
-        
+
         // If no configuration exists, expand it by default
         if (!isConfigured) {
           const content = document.getElementById('api-config-content');
@@ -1708,17 +1742,21 @@
             chevron.classList.remove('expanded');
           }
         }
-        
+
         // Pre-fill with stored values if available
         if (hasLocalUrl) {
           document.getElementById('api-base-url').value = hasLocalUrl;
         } else {
           // Default to the expected API URL
-          document.getElementById('api-base-url').value = 'https://api.charli3.io';
+          document.getElementById('api-base-url').value =
+            'https://api.charli3.io';
         }
         if (hasLocalToken) {
           if (hasLocalToken.length > 10) {
-            const maskedToken = hasLocalToken.slice(0, 5) + '••••••••••' + hasLocalToken.slice(-5);
+            const maskedToken =
+              hasLocalToken.slice(0, 5) +
+              '••••••••••' +
+              hasLocalToken.slice(-5);
             document.getElementById('api-bearer-token').value = maskedToken;
           } else {
             document.getElementById('api-bearer-token').value = hasLocalToken;
@@ -1731,19 +1769,23 @@
         const panel = document.getElementById('api-config-panel');
         const content = document.getElementById('api-config-content');
         const chevron = document.getElementById('config-chevron');
-        
+
         panel.style.display = 'block';
         content.classList.remove('collapsed');
         chevron.classList.add('expanded');
-        
+
         // Pre-fill with current values
-        const currentUrl = localStorage.getItem('charli3_api_base_url') || 'https://api.charli3.io';
-        const currentToken = localStorage.getItem('charli3_api_bearer_token') || '';
-        
+        const currentUrl =
+          localStorage.getItem('charli3_api_base_url') ||
+          'https://api.charli3.io';
+        const currentToken =
+          localStorage.getItem('charli3_api_bearer_token') || '';
+
         document.getElementById('api-base-url').value = currentUrl;
         // Show partially masked token (first 5 + middle dots + last 5) if exists, otherwise leave empty
         if (currentToken && currentToken.length > 10) {
-          const maskedToken = currentToken.slice(0, 5) + '••••••••••' + currentToken.slice(-5);
+          const maskedToken =
+            currentToken.slice(0, 5) + '••••••••••' + currentToken.slice(-5);
           document.getElementById('api-bearer-token').value = maskedToken;
         } else {
           document.getElementById('api-bearer-token').value = currentToken;
@@ -1754,7 +1796,7 @@
       function toggleStreamWidget() {
         const content = document.getElementById('stream-content-wrapper');
         const chevron = document.getElementById('stream-chevron');
-        
+
         if (content && chevron) {
           if (content.classList.contains('collapsed')) {
             content.classList.remove('collapsed');

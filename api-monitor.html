@@ -1,128 +1,183 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>API Call Monitor</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .monitor { background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0; }
-        .call-log { background: white; border: 1px solid #ddd; padding: 10px; margin: 5px 0; border-radius: 3px; }
-        .endpoint { font-weight: bold; color: #0066cc; }
-        .timestamp { color: #666; font-size: 0.9em; }
-        .counter { font-size: 1.2em; font-weight: bold; color: #ff6600; }
-        button { background: #007cba; color: white; border: none; padding: 10px 15px; border-radius: 3px; cursor: pointer; margin: 5px; }
-        button:hover { background: #005a87; }
-        .summary { background: #e7f3ff; padding: 10px; border-radius: 5px; margin: 10px 0; }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .monitor {
+        background: #f5f5f5;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 10px 0;
+      }
+      .call-log {
+        background: white;
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 3px;
+      }
+      .endpoint {
+        font-weight: bold;
+        color: #0066cc;
+      }
+      .timestamp {
+        color: #666;
+        font-size: 0.9em;
+      }
+      .counter {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #ff6600;
+      }
+      button {
+        background: #007cba;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 3px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      button:hover {
+        background: #005a87;
+      }
+      .summary {
+        background: #e7f3ff;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 10px 0;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>API Call Monitor</h1>
-    <p>Use this page alongside your main app to monitor API calls in real-time.</p>
-    
+    <p>
+      Use this page alongside your main app to monitor API calls in real-time.
+    </p>
+
     <div class="monitor">
-        <h3>Quick Actions</h3>
-        <button onclick="showApiSummary()">Show API Summary</button>
-        <button onclick="resetCounter()">Reset Counter</button>
-        <button onclick="startMonitoring()">Start Real-time Monitoring</button>
-        <button onclick="stopMonitoring()">Stop Monitoring</button>
+      <h3>Quick Actions</h3>
+      <button onclick="showApiSummary()">Show API Summary</button>
+      <button onclick="resetCounter()">Reset Counter</button>
+      <button onclick="startMonitoring()">Start Real-time Monitoring</button>
+      <button onclick="stopMonitoring()">Stop Monitoring</button>
     </div>
 
-    <div id="summary" class="summary" style="display: none;">
-        <h3>API Call Summary</h3>
-        <div id="summaryContent"></div>
+    <div id="summary" class="summary" style="display: none">
+      <h3>API Call Summary</h3>
+      <div id="summaryContent"></div>
     </div>
 
-    <div id="liveLog" style="display: none;">
-        <h3>Live API Call Log</h3>
-        <div id="logContent"></div>
+    <div id="liveLog" style="display: none">
+      <h3>Live API Call Log</h3>
+      <div id="logContent"></div>
     </div>
 
     <script>
-        let monitoringInterval;
-        let lastKnownCallCount = 0;
+      let monitoringInterval;
+      let lastKnownCallCount = 0;
 
-        function showApiSummary() {
-            // This requires the main app to be loaded and accessible
-            if (window.opener && window.opener.window && window.opener.window.app) {
-                const api = window.opener.window.app.getAPI();
-                const summary = api.logApiCalls();
-                
-                document.getElementById('summary').style.display = 'block';
-                document.getElementById('summaryContent').innerHTML = `
+      function showApiSummary() {
+        // This requires the main app to be loaded and accessible
+        if (window.opener && window.opener.window && window.opener.window.app) {
+          const api = window.opener.window.app.getAPI();
+          const summary = api.logApiCalls();
+
+          document.getElementById('summary').style.display = 'block';
+          document.getElementById('summaryContent').innerHTML = `
                     <div class="counter">Total API Calls: ${summary.totalCalls}</div>
                     <h4>Calls by Endpoint:</h4>
-                    ${Object.entries(summary.callsByEndpoint).map(([endpoint, count]) => 
-                        `<div>${endpoint}: ${count} calls</div>`
-                    ).join('')}
+                    ${Object.entries(summary.callsByEndpoint)
+                      .map(
+                        ([endpoint, count]) =>
+                          `<div>${endpoint}: ${count} calls</div>`
+                      )
+                      .join('')}
                     <h4>Recent Calls:</h4>
-                    ${summary.recentCalls.map(call => 
-                        `<div class="call-log">
+                    ${summary.recentCalls
+                      .map(
+                        call =>
+                          `<div class="call-log">
                             <div class="endpoint">${call.url}</div>
                             <div class="timestamp">${new Date(call.timestamp).toLocaleTimeString()}</div>
                         </div>`
-                    ).join('')}
+                      )
+                      .join('')}
                 `;
-            } else {
-                alert('Main app not found. Please open this page from the main app or ensure the main app is loaded.');
-            }
+        } else {
+          alert(
+            'Main app not found. Please open this page from the main app or ensure the main app is loaded.'
+          );
         }
+      }
 
-        function resetCounter() {
-            if (window.opener && window.opener.window && window.opener.window.app) {
-                const api = window.opener.window.app.getAPI();
-                api.resetApiCounter();
-                lastKnownCallCount = 0;
-                alert('API counter reset');
-            } else {
-                alert('Main app not found.');
-            }
+      function resetCounter() {
+        if (window.opener && window.opener.window && window.opener.window.app) {
+          const api = window.opener.window.app.getAPI();
+          api.resetApiCounter();
+          lastKnownCallCount = 0;
+          alert('API counter reset');
+        } else {
+          alert('Main app not found.');
         }
+      }
 
-        function startMonitoring() {
-            document.getElementById('liveLog').style.display = 'block';
-            monitoringInterval = setInterval(() => {
-                if (window.opener && window.opener.window && window.opener.window.app) {
-                    const api = window.opener.window.app.getAPI();
-                    const summary = api.logApiCalls();
-                    
-                    if (summary.totalCalls > lastKnownCallCount) {
-                        const newCalls = summary.allCalls.slice(lastKnownCallCount);
-                        const logContent = document.getElementById('logContent');
-                        
-                        newCalls.forEach(call => {
-                            const callDiv = document.createElement('div');
-                            callDiv.className = 'call-log';
-                            callDiv.innerHTML = `
+      function startMonitoring() {
+        document.getElementById('liveLog').style.display = 'block';
+        monitoringInterval = setInterval(() => {
+          if (
+            window.opener &&
+            window.opener.window &&
+            window.opener.window.app
+          ) {
+            const api = window.opener.window.app.getAPI();
+            const summary = api.logApiCalls();
+
+            if (summary.totalCalls > lastKnownCallCount) {
+              const newCalls = summary.allCalls.slice(lastKnownCallCount);
+              const logContent = document.getElementById('logContent');
+
+              newCalls.forEach(call => {
+                const callDiv = document.createElement('div');
+                callDiv.className = 'call-log';
+                callDiv.innerHTML = `
                                 <div class="endpoint">API Call #${call.id}: ${call.url}</div>
                                 <div class="timestamp">${new Date(call.timestamp).toLocaleTimeString()}</div>
                             `;
-                            logContent.appendChild(callDiv);
-                        });
-                        
-                        lastKnownCallCount = summary.totalCalls;
-                        logContent.scrollTop = logContent.scrollHeight;
-                    }
-                }
-            }, 1000);
-        }
+                logContent.appendChild(callDiv);
+              });
 
-        function stopMonitoring() {
-            if (monitoringInterval) {
-                clearInterval(monitoringInterval);
-                monitoringInterval = null;
+              lastKnownCallCount = summary.totalCalls;
+              logContent.scrollTop = logContent.scrollHeight;
             }
+          }
+        }, 1000);
+      }
+
+      function stopMonitoring() {
+        if (monitoringInterval) {
+          clearInterval(monitoringInterval);
+          monitoringInterval = null;
         }
+      }
 
-        // Add browser console commands
-        window.monitorAPI = {
-            showSummary: showApiSummary,
-            reset: resetCounter,
-            startLive: startMonitoring,
-            stopLive: stopMonitoring
-        };
+      // Add browser console commands
+      window.monitorAPI = {
+        showSummary: showApiSummary,
+        reset: resetCounter,
+        startLive: startMonitoring,
+        stopLive: stopMonitoring,
+      };
 
-        console.log('API Monitor loaded. Use monitorAPI.showSummary(), monitorAPI.reset(), monitorAPI.startLive(), monitorAPI.stopLive()');
+      console.log(
+        'API Monitor loaded. Use monitorAPI.showSummary(), monitorAPI.reset(), monitorAPI.startLive(), monitorAPI.stopLive()'
+      );
     </script>
-</body>
+  </body>
 </html>

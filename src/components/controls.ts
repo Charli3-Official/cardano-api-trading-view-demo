@@ -103,13 +103,13 @@ export class ControlsComponent {
       return;
     }
 
-    const currentResolution = resolutionSelect.value;
+    // const currentResolution = resolutionSelect.value;
 
     // Update all resolution options to show bar count but don't disable any
     Array.from(resolutionSelect.options).forEach(option => {
       const resolution = option.value;
       const bars = Utils.calculateBars(from, to, resolution);
-      
+
       // Always enable all options
       option.disabled = false;
       const currentText = option.textContent || '';
@@ -117,7 +117,6 @@ export class ControlsComponent {
       option.textContent = baseText; // Remove any previous bar count info
       option.title = `${bars} bars`;
     });
-
 
     // Update bars count
     const bars = Utils.calculateBars(from, to, resolutionSelect.value);

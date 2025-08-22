@@ -241,8 +241,8 @@ export class TradingViewDemoApp {
           this.state.currentSelectedToken.asset_name
         );
         await this.metadataComponent.update(
-          this.state.currentSelectedToken, 
-          currentTokenData, 
+          this.state.currentSelectedToken,
+          currentTokenData,
           historicalData
         );
       }
@@ -264,74 +264,6 @@ export class TradingViewDemoApp {
     const roundedFrom = Math.floor(from / 60) * 60; // Round to nearest minute
     const roundedTo = Math.floor(to / 60) * 60;
     return `${ticker}_${resolution}_${roundedFrom}_${roundedTo}`;
-  }
-
-  private calculateOptimalTimeRange(
-    from: number,
-    to: number,
-    resolution: string
-  ) {
-    const resolutionConfig =
-      APP_CONFIG.RESOLUTION_CONFIG[
-        resolution as keyof typeof APP_CONFIG.RESOLUTION_CONFIG
-      ];
-
-    if (!resolutionConfig) {
-      return { adjustedFrom: from, adjustedTo: to, barCount: 0 };
-    }
-
-    const { interval, maxBars } = resolutionConfig;
-    const requestedBarCount = Math.ceil((to - from) / interval);
-
-    // If we're within limits, return original range
-    if (requestedBarCount <= maxBars) {
-      return {
-        adjustedFrom: from,
-        adjustedTo: to,
-        barCount: requestedBarCount,
-      };
-    }
-
-    // Calculate the maximum time range we can request
-    const maxTimeRange = maxBars * interval;
-
-    // Prefer recent data - adjust 'from' to respect the limit
-    const adjustedFrom = to - maxTimeRange;
-
-    debugLog(`📊 Data limiting: ${requestedBarCount} bars -> ${maxBars} bars`);
-    debugLog(
-      `📊 Time range adjusted: ${new Date(from * 1000)} -> ${new Date(adjustedFrom * 1000)}`
-    );
-
-    return {
-      adjustedFrom,
-      adjustedTo: to,
-      barCount: maxBars,
-    };
-  }
-
-  private showDataLimitNotification(
-    actualBars: number,
-    requestedSeconds: number,
-    adjustedSeconds: number
-  ) {
-    const notification = document.getElementById('data-limit-notice');
-    if (notification) {
-      const requestedDays = Math.round(requestedSeconds / 86400);
-      const adjustedDays = Math.round(adjustedSeconds / 86400);
-
-      notification.innerHTML = `
-      <span class="notification-icon">ℹ️</span>
-      Showing most recent ${actualBars} bars (${adjustedDays}d) of ${requestedDays}d requested.
-      <span class="notification-tip">Zoom in or use shorter time range for more detail.</span>
-    `;
-      notification.className = 'data-limit-notification show';
-
-      // Auto-hide after 5 seconds
-      setTimeout(() => {
-        notification.classList.remove('show');
-      }, 5000);
-    }
   }
 
   private updateBarsCountDisplay(barCount: number) {
