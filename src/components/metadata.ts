@@ -6,6 +6,9 @@ import adaLogoUrl from '../../assets/ada_logo.png';
 import type { TokenData } from '../types/index.js';
 
 export class MetadataComponent {
+  private logoCache = new Map<string, { url: string; timestamp: number }>();
+  private readonly LOGO_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+
   async update(
     tokenData: TokenData,
     currentTokenData?: any,
@@ -108,12 +111,42 @@ export class MetadataComponent {
       return adaLogoUrl;
     }
 
+    const cacheKey = `${policyId}${assetName}`;
+    const now = Date.now();
+
+    // Check if we have a cached logo that's still valid
+    const cached = this.logoCache.get(cacheKey);
+    if (cached && now - cached.timestamp < this.LOGO_CACHE_DURATION) {
+      debugLog(`🖼️ Using cached logo for ${cacheKey}`);
+      return cached.url;
+    }
+
     try {
+      debugLog(`🖼️ Fetching new logo for ${cacheKey}`);
       const blob = await fetchTokenLogo(policyId, assetName);
-      return URL.createObjectURL(blob);
+      const url = URL.createObjectURL(blob);
+
+      // Cache the logo URL
+      this.logoCache.set(cacheKey, { url, timestamp: now });
+
+      // Clean up old cache entries (optional, to prevent memory leaks)
+      this.cleanupExpiredLogos();
+
+      return url;
     } catch (error) {
       console.error(`Failed to fetch logo:`, error);
       return null;
+    }
+  }
+
+  private cleanupExpiredLogos() {
+    const now = Date.now();
+    for (const [key, cached] of this.logoCache.entries()) {
+      if (now - cached.timestamp >= this.LOGO_CACHE_DURATION) {
+        // Revoke the object URL to free memory
+        URL.revokeObjectURL(cached.url);
+        this.logoCache.delete(key);
+      }
     }
   }
 
