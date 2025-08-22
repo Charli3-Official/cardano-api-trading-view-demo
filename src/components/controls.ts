@@ -49,6 +49,9 @@ export class ControlsComponent {
       const savedTimezone = localStorage.getItem('timezone');
       if (savedTimezone) {
         this.selectedTimezone = savedTimezone;
+      } else {
+        // No saved timezone, use auto-detected and save it
+        localStorage.setItem('timezone', this.selectedTimezone);
       }
 
       TIMEZONES.forEach(tz => {
@@ -67,6 +70,9 @@ export class ControlsComponent {
         this.onTimezoneChange(this.selectedTimezone);
         this.updateDateInputsTimezone();
       });
+
+      // Trigger initial timezone change to sync all components
+      this.onTimezoneChange(this.selectedTimezone);
     }
   }
 
@@ -97,59 +103,21 @@ export class ControlsComponent {
       return;
     }
 
-    const { valid, invalid, suggestions } = Utils.getValidResolutions(from, to);
     const currentResolution = resolutionSelect.value;
 
+    // Update all resolution options to show bar count but don't disable any
     Array.from(resolutionSelect.options).forEach(option => {
       const resolution = option.value;
       const bars = Utils.calculateBars(from, to, resolution);
-
-      if (valid.includes(resolution)) {
-        option.disabled = false;
-        const currentText = option.textContent || '';
-        option.textContent = currentText.split(' (')[0];
-        option.title = `${bars} bars`;
-      } else if (invalid.includes(resolution)) {
-        option.disabled = true;
-        const currentText = option.textContent || '';
-        const baseText = currentText.split(' (')[0];
-        option.textContent = `${baseText} (${bars} bars - locked)`;
-        option.title = `${suggestions[resolution]} (currently ${bars} bars, max 240)`;
-      }
+      
+      // Always enable all options
+      option.disabled = false;
+      const currentText = option.textContent || '';
+      const baseText = currentText.split(' (')[0];
+      option.textContent = baseText; // Remove any previous bar count info
+      option.title = `${bars} bars`;
     });
 
-    // Auto-select better resolution if current is invalid
-    if (invalid.includes(currentResolution) && valid.length > 0) {
-      const timeRangeHours = (to - from) / 3600;
-      let bestResolution = valid[0];
-
-      if (timeRangeHours <= 4) {
-        bestResolution =
-          valid.find(r => r === '1min') ||
-          valid.find(r => r === '5min') ||
-          valid[0];
-      } else if (timeRangeHours <= 24) {
-        bestResolution =
-          valid.find(r => r === '5min') ||
-          valid.find(r => r === '15min') ||
-          valid[0];
-      } else if (timeRangeHours <= 168) {
-        bestResolution =
-          valid.find(r => r === '15min') ||
-          valid.find(r => r === '60min') ||
-          valid[0];
-      } else {
-        bestResolution =
-          valid.find(r => r === '60min') ||
-          valid.find(r => r === '1d') ||
-          valid[0];
-      }
-
-      if (bestResolution !== currentResolution) {
-        resolutionSelect.value = bestResolution;
-        this.onTimeRangeChange();
-      }
-    }
 
     // Update bars count
     const bars = Utils.calculateBars(from, to, resolutionSelect.value);
@@ -246,8 +214,7 @@ export class ControlsComponent {
 
     if (resolutionSelect) {
       resolutionSelect.addEventListener('change', () => {
-        // Automatically set optimal date range for new resolution
-        this.setOptimalDateRangeForResolution(resolutionSelect.value);
+        // Don't automatically change date range - preserve user's selection
         this.updateResolutionOptions();
         this.onTimeRangeChange();
       });

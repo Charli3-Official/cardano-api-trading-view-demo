@@ -214,6 +214,28 @@
         margin-left: 8px;
       }
 
+      .data-current {
+        color: #4CAF50;
+        font-weight: 600;
+      }
+
+      .data-historical {
+        color: #FF9800;
+        font-weight: 600;
+      }
+
+      .data-current:before {
+        content: "●";
+        color: #4CAF50;
+        margin-right: 4px;
+      }
+
+      .data-historical:before {
+        content: "●";
+        color: #FF9800;
+        margin-right: 4px;
+      }
+
       .positive {
         color: var(--accent-green);
       }
@@ -810,7 +832,7 @@
 
       /* Tooltip for help icon */
       .bars-info::before {
-        content: 'Charts are limited to 240 bars. Lock resolutions exceed this limit for the selected timeframe.';
+        content: 'Shows the number of data bars for the selected timeframe and resolution.';
         position: absolute;
         bottom: 100%;
         right: 0;
@@ -838,7 +860,7 @@
       }
 
       .bars-info.bars-warning::before {
-        content: '⚠️ Approaching 240 bar limit! Some resolutions may be locked. Reduce your timeframe to unlock more resolution options.';
+        content: '⚠️ High bar count detected! For better performance, consider reducing your timeframe or choosing a higher resolution.';
         background: rgba(248, 81, 73, 0.1);
         border-color: var(--accent-red);
         color: var(--accent-red);
@@ -1276,7 +1298,7 @@
                 Bearer Token
               </label>
               <input
-                type="password"
+                type="text"
                 id="api-bearer-token"
                 class="config-input"
                 placeholder="Enter your Charli3 API key"
@@ -1347,22 +1369,38 @@
               <span id="token-pair" class="detail-value">--</span>
             </div>
             <div class="detail-item">
-              <span class="detail-label">Price</span>
+              <span class="detail-label">Price (Current)</span>
               <div class="detail-value">
-                <span id="current-price">--</span>
+                <span id="current-price" class="data-current">--</span>
                 <span id="price-change" class="price-change">--</span>
               </div>
             </div>
             <div class="detail-item">
-              <span class="detail-label">TVL</span>
+              <span class="detail-label">Price (Historical)</span>
               <div class="detail-value">
-                <span id="current-tvl">--</span>
+                <span id="historical-price" class="data-historical">--</span>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">TVL (Current)</span>
+              <div class="detail-value">
+                <span id="current-tvl" class="data-current">--</span>
                 <span id="tvl-change" class="price-change">--</span>
               </div>
             </div>
             <div class="detail-item">
-              <span class="detail-label">24h Volume</span>
-              <span id="daily-volume" class="detail-value">--</span>
+              <span class="detail-label">TVL (Historical)</span>
+              <div class="detail-value">
+                <span id="historical-tvl" class="data-historical">--</span>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">24h Volume (Current)</span>
+              <span id="daily-volume" class="detail-value data-current">--</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">24h Volume (Historical)</span>
+              <span id="historical-volume" class="detail-value data-historical">--</span>
             </div>
             <div class="detail-item">
               <span class="detail-label">Policy ID</span>
@@ -1550,7 +1588,12 @@
         event.preventDefault();
         
         let baseUrl = document.getElementById('api-base-url').value.trim();
-        const bearerToken = document.getElementById('api-bearer-token').value.trim();
+        let bearerToken = document.getElementById('api-bearer-token').value.trim();
+        
+        // If token contains the masked pattern (dots in middle), keep the existing token
+        if (bearerToken.includes('••••••••••')) {
+          bearerToken = localStorage.getItem('charli3_api_bearer_token') || '';
+        }
         
         if (!baseUrl || !bearerToken) {
           showConfigStatus('Please fill in all fields', 'error');
@@ -1674,7 +1717,12 @@
           document.getElementById('api-base-url').value = 'https://api.charli3.io';
         }
         if (hasLocalToken) {
-          document.getElementById('api-bearer-token').value = hasLocalToken;
+          if (hasLocalToken.length > 10) {
+            const maskedToken = hasLocalToken.slice(0, 5) + '••••••••••' + hasLocalToken.slice(-5);
+            document.getElementById('api-bearer-token').value = maskedToken;
+          } else {
+            document.getElementById('api-bearer-token').value = hasLocalToken;
+          }
         }
       }
 
@@ -1693,7 +1741,13 @@
         const currentToken = localStorage.getItem('charli3_api_bearer_token') || '';
         
         document.getElementById('api-base-url').value = currentUrl;
-        document.getElementById('api-bearer-token').value = currentToken;
+        // Show partially masked token (first 5 + middle dots + last 5) if exists, otherwise leave empty
+        if (currentToken && currentToken.length > 10) {
+          const maskedToken = currentToken.slice(0, 5) + '••••••••••' + currentToken.slice(-5);
+          document.getElementById('api-bearer-token').value = maskedToken;
+        } else {
+          document.getElementById('api-bearer-token').value = currentToken;
+        }
       }
 
       // Toggle stream widget content

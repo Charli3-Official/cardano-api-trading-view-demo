@@ -8,6 +8,7 @@ import { CacheManager } from './cache/manager.js';
 import { TokenService } from './services/token.js';
 import { ChartManager } from './chart/manager.js';
 import { SearchComponent } from './components/search.js';
+import { Utils } from './utils/helpers.js';
 import { MetadataComponent } from './components/metadata.js';
 import { ThemeComponent } from './components/theme.js';
 import { ControlsComponent } from './components/controls.js';
@@ -62,8 +63,8 @@ export class TradingViewDemoApp {
 
       // Always initialize core components regardless of API config
       this.themeComponent.initialize();
-      this.controlsComponent.initialize();
       this.chartManager.initialize();
+      this.controlsComponent.initialize();
 
       // Check if API configuration is available
       if (!APP_CONFIG.isConfigured()) {
@@ -135,6 +136,7 @@ export class TradingViewDemoApp {
       tokenData.asset_name
     );
 
+    // Initially update without historical data
     await this.metadataComponent.update(tokenData, currentTokenData);
 
     if (!this.state.isAutoSyncEnabled) {
@@ -181,18 +183,10 @@ export class TradingViewDemoApp {
 
     const { from, to, resolution } = this.controlsComponent.getTimeRange();
 
-    // 🎯 SOLUTION: Calculate optimal time range to respect 240 bar limit
-    const { adjustedFrom, adjustedTo, barCount } =
-      this.calculateOptimalTimeRange(from, to, resolution);
-
-    // Show user feedback if we had to adjust the range
-    if (adjustedFrom !== from || adjustedTo !== to) {
-      this.showDataLimitNotification(
-        barCount,
-        to - from,
-        adjustedTo - adjustedFrom
-      );
-    }
+    // Use the exact time range selected by user - no automatic adjustments
+    const adjustedFrom = from;
+    const adjustedTo = to;
+    const barCount = Utils.calculateBars(from, to, resolution);
 
     try {
       // Generate cache key for historical data
@@ -239,6 +233,19 @@ export class TradingViewDemoApp {
       }
 
       await this.chartManager.updateChart(historicalData, resolution);
+
+      // Update metadata component with historical data
+      if (this.state.currentSelectedToken) {
+        const currentTokenData = await this.tokenService.getCurrentTokenData(
+          this.state.currentSelectedToken.policy_id,
+          this.state.currentSelectedToken.asset_name
+        );
+        await this.metadataComponent.update(
+          this.state.currentSelectedToken, 
+          currentTokenData, 
+          historicalData
+        );
+      }
 
       // Update the bars count display
       this.updateBarsCountDisplay(barCount);
