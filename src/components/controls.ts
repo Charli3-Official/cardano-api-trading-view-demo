@@ -154,9 +154,26 @@ export class ControlsComponent {
       'resolution-select'
     ) as HTMLSelectElement;
 
-    const from = Math.floor(new Date(fromInput.value).getTime() / 1000);
-    const to = Math.floor(new Date(toInput.value).getTime() / 1000);
+    // Use timezone-aware parsing to convert user's local time input to UTC timestamps for API
+    const from = Formatters.parseDateInputToUTC(
+      fromInput.value,
+      this.selectedTimezone
+    );
+    const to = Formatters.parseDateInputToUTC(
+      toInput.value,
+      this.selectedTimezone
+    );
     const resolution = resolutionSelect.value;
+
+    console.log('⏰ Time range for API:', {
+      fromInput: fromInput.value,
+      toInput: toInput.value,
+      timezone: this.selectedTimezone,
+      fromUTC: from,
+      toUTC: to,
+      fromUTCDate: new Date(from * 1000).toUTCString(),
+      toUTCDate: new Date(to * 1000).toUTCString(),
+    });
 
     return { from, to, resolution };
   }

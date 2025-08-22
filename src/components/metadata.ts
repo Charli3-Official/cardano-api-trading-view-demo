@@ -123,7 +123,10 @@ export class MetadataComponent {
     historicalData?: any
   ) {
     document.getElementById('token-pair')!.textContent = tokenData.pair;
-    document.getElementById('policy-id')!.textContent = tokenData.policy_id;
+
+    // Format policy ID with shortened display and copy functionality
+    this.updatePolicyId(tokenData.policy_id);
+
     document.getElementById('token-name')!.textContent =
       Utils.hexToAscii(tokenData.asset_name) || tokenData.asset_name;
 
@@ -195,6 +198,76 @@ export class MetadataComponent {
       document.getElementById('historical-price')!.textContent = '--';
       document.getElementById('historical-tvl')!.textContent = '--';
       document.getElementById('historical-volume')!.textContent = '--';
+    }
+  }
+
+  private updatePolicyId(policyId: string) {
+    const shortEl = document.getElementById('policy-id-short')!;
+    const copyBtn = document.getElementById(
+      'policy-id-copy'
+    ) as HTMLButtonElement;
+
+    if (!policyId || policyId === '--') {
+      shortEl.textContent = '--';
+      copyBtn.style.display = 'none';
+      return;
+    }
+
+    // Format as first 5 ... last 5 characters
+    const shortFormat =
+      policyId.length > 10
+        ? `${policyId.slice(0, 5)}...${policyId.slice(-5)}`
+        : policyId;
+
+    shortEl.textContent = shortFormat;
+    shortEl.title = `Full Policy ID: ${policyId}`; // Tooltip shows full ID
+    copyBtn.style.display = 'inline-block';
+
+    // Remove any existing event listeners and add new one
+    const newCopyBtn = copyBtn.cloneNode(true) as HTMLButtonElement;
+    copyBtn.parentNode!.replaceChild(newCopyBtn, copyBtn);
+
+    newCopyBtn.addEventListener('click', () => {
+      void this.copyToClipboard(policyId, newCopyBtn);
+    });
+  }
+
+  private async copyToClipboard(text: string, button: HTMLButtonElement) {
+    try {
+      // Check if clipboard API is available
+      if (typeof window !== 'undefined' && window.navigator?.clipboard) {
+        await window.navigator.clipboard.writeText(text);
+      } else {
+        // Fallback for environments where clipboard API is not available
+        throw new Error('Clipboard API not available');
+      }
+
+      // Visual feedback
+      const originalText = button.textContent;
+      button.textContent = '✓';
+      button.classList.add('copied');
+
+      // Reset after 2 seconds
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.classList.remove('copied');
+      }, 2000);
+
+      console.log('📋 Policy ID copied to clipboard:', text);
+    } catch (error) {
+      console.error('Failed to copy policy ID:', error);
+
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+
+      // Visual feedback for fallback
+      button.textContent = '✓';
+      setTimeout(() => (button.textContent = '📋'), 2000);
     }
   }
 }

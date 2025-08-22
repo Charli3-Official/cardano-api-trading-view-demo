@@ -115,7 +115,15 @@ export class ChartManager {
   }
 
   setTimezone(timezone: string) {
+    console.log('🌍 Chart timezone updated:', timezone);
     this.selectedTimezone = timezone;
+
+    // If chart is initialized, we should trigger a redraw of time labels
+    if (this.chart) {
+      console.log(
+        '🔄 Chart exists, timezone change will take effect on next data update'
+      );
+    }
   }
 
   private getChartOptions(): DeepPartial<ChartOptions> {
@@ -312,18 +320,24 @@ export class ChartManager {
         return;
       }
 
-      const dateStr = new Date((param.time as number) * 1000).toLocaleString(
-        'en-US',
-        {
-          timeZone: this.selectedTimezone,
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-        }
-      );
+      const timestamp = param.time as number;
+      const dateStr = new Date(timestamp * 1000).toLocaleString('en-US', {
+        timeZone: this.selectedTimezone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+
+      // Debug logging for timezone issues
+      console.log('🕒 Hover timestamp:', {
+        utcTimestamp: timestamp,
+        timezone: this.selectedTimezone,
+        formattedTime: dateStr,
+        utcTime: new Date(timestamp * 1000).toUTCString(),
+      });
 
       let content = `<div style="font-weight: 600; margin-bottom: 4px">${dateStr}</div>`;
 

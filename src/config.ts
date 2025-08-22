@@ -160,16 +160,34 @@ export const CACHE_CONFIG: CacheConfig = {
 
 // Remove the old RESOLUTION_CONFIG if it exists separately
 export const TIMEZONES = [
-  'America/Chicago',
   'UTC',
   'America/New_York',
+  'America/Chicago',
   'America/Denver',
+  'America/Phoenix',
   'America/Los_Angeles',
+  'America/Anchorage',
+  'America/Guayaquil', // Ecuador
+  'America/Bogota', // Colombia
+  'America/Lima', // Peru
+  'America/Mexico_City', // Mexico
+  'America/Sao_Paulo', // Brazil
+  'America/Argentina/Buenos_Aires', // Argentina
   'Europe/London',
   'Europe/Paris',
   'Europe/Berlin',
+  'Europe/Rome',
+  'Europe/Madrid',
+  'Europe/Amsterdam',
+  'Europe/Zurich',
   'Asia/Tokyo',
   'Asia/Shanghai',
+  'Asia/Hong_Kong',
+  'Asia/Singapore',
+  'Asia/Seoul',
   'Asia/Kolkata',
+  'Asia/Dubai',
   'Australia/Sydney',
+  'Australia/Melbourne',
+  'Pacific/Auckland',
 ];

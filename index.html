@@ -240,6 +240,37 @@
         margin-right: 4px;
       }
 
+      .policy-id-short {
+        color: var(--text-secondary);
+      }
+
+      .copy-button {
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-size: 12px;
+        margin-left: 8px;
+        padding: 2px 6px;
+        transition: all 0.2s ease;
+      }
+
+      .copy-button:hover {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        border-color: var(--accent-color);
+      }
+
+      .copy-button:active {
+        transform: scale(0.95);
+      }
+
+      .copy-button.copied {
+        color: var(--accent-green);
+        border-color: var(--accent-green);
+      }
+
       .positive {
         color: var(--accent-green);
       }
@@ -1430,7 +1461,19 @@
             </div>
             <div class="detail-item">
               <span class="detail-label">Policy ID</span>
-              <span id="policy-id" class="detail-value monospace">--</span>
+              <div class="detail-value">
+                <span id="policy-id-short" class="monospace policy-id-short"
+                  >--</span
+                >
+                <button
+                  id="policy-id-copy"
+                  class="copy-button"
+                  title="Copy full policy ID"
+                  style="display: none"
+                >
+                  📋
+                </button>
+              </div>
             </div>
             <div class="detail-item">
               <span class="detail-label">Token Name</span>

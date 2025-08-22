@@ -56,7 +56,13 @@ export class AutoSyncService {
 
   private loadSettings() {
     const saved = localStorage.getItem('autoSync');
+    // Default to false (disabled) if no saved setting exists
     this.isEnabled = saved === 'true';
+
+    console.log('🔧 Auto-sync settings loaded:', {
+      savedValue: saved,
+      isEnabled: this.isEnabled,
+    });
 
     const checkbox = document.getElementById(
       'auto-sync-checkbox'
@@ -64,6 +70,14 @@ export class AutoSyncService {
     if (checkbox) checkbox.checked = this.isEnabled;
 
     this.updateButtonState();
+
+    // Ensure auto-sync actually starts if it's supposed to be enabled
+    if (this.isEnabled) {
+      console.log('🟢 Auto-sync was saved as enabled, starting it now');
+      this.start();
+    } else {
+      console.log('🔴 Auto-sync starting as disabled (default)');
+    }
   }
 
   private toggleAutoSync(enabled: boolean) {
@@ -95,17 +109,17 @@ export class AutoSyncService {
 
     if (!config) return;
 
-    this.updateDates();
+    // Don't call updateDates() immediately - preserve user's current date range
 
     this.autoSyncInterval = window.setInterval(() => {
       this.updateDates();
 
-      if (resolution === '1min') {
-        const tickCount = Math.floor(Date.now() / config.updateInterval) % 4;
-        if (tickCount === 0) {
-          void this.onUpdate();
-        }
-      }
+      // Always update the chart when dates change, regardless of resolution
+      console.log(
+        '🔄 Auto-sync triggering chart update for resolution:',
+        resolution
+      );
+      void this.onUpdate();
     }, config.updateInterval);
 
     debugLog(`🕐 Auto-sync started with ${config.updateInterval}ms interval`);
@@ -122,50 +136,47 @@ export class AutoSyncService {
   private updateDates() {
     console.log('🔄 updateDates called at:', new Date().toLocaleTimeString());
 
-    const resolution = this.getCurrentResolution();
     const now = new Date();
-    const start = new Date(now);
-    switch (resolution) {
-      case '1min':
-        start.setHours(start.getHours() - 4);
-        break;
-      case '5min':
-        start.setHours(start.getHours() - 12);
-        break;
-      case '15min':
-        start.setDate(start.getDate() - 1);
-        break;
-      case '60min':
-        start.setDate(start.getDate() - 3);
-        break;
-      case '1d':
-      default:
-        start.setMonth(start.getMonth() - 1);
-        break;
-    }
-
     const fromInput = document.getElementById('from-date') as HTMLInputElement;
     const toInput = document.getElementById('to-date') as HTMLInputElement;
 
     if (fromInput && toInput) {
-      console.log('📅 Updating dates:', {
-        from: fromInput.value,
-        to: toInput.value,
-        newFrom: Formatters.formatDateForInput(start, this.selectedTimezone),
-        newTo: Formatters.formatDateForInput(now, this.selectedTimezone),
-      });
+      // Calculate the current time window duration
+      const oldFromDate = new Date(fromInput.value);
+      const oldToDate = new Date(toInput.value);
+      const windowDuration = oldToDate.getTime() - oldFromDate.getTime(); // in milliseconds
 
-      fromInput.value = Formatters.formatDateForInput(
-        start,
+      // Create new sliding window: keep the same duration but end at current time
+      const newToDate = now;
+      const newFromDate = new Date(now.getTime() - windowDuration);
+
+      const newFromValue = Formatters.formatDateForInput(
+        newFromDate,
         this.selectedTimezone
       );
-      toInput.value = Formatters.formatDateForInput(now, this.selectedTimezone);
+      const newToValue = Formatters.formatDateForInput(
+        newToDate,
+        this.selectedTimezone
+      );
 
-      // 🔧 KEY: These events should trigger chart update
+      console.log('📅 Sliding time window:', {
+        windowDuration: `${Math.round(windowDuration / (1000 * 60))} minutes`,
+        oldWindow: `${fromInput.value} to ${toInput.value}`,
+        newWindow: `${newFromValue} to ${newToValue}`,
+        currentTime: now.toLocaleString(),
+      });
+
+      // Update both dates to create sliding window
+      fromInput.value = newFromValue;
+      toInput.value = newToValue;
+
+      // Dispatch change events for both inputs
       fromInput.dispatchEvent(new Event('change', { bubbles: true }));
       toInput.dispatchEvent(new Event('change', { bubbles: true }));
 
-      console.log('✅ Date events dispatched');
+      console.log(
+        '✅ Sliding window updated - showing latest data with same duration'
+      );
     } else {
       console.error('❌ Date inputs not found!');
     }
